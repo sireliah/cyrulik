@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="section column is-6 is-6-tablet is-12-mobile">
+  <div class="box">
+  Proszę się zalogować
+  <form id="post" action="/login" method="POST">
+    <div class="field">
+      <label class="label">Kto?</label>
+      <div class="control">
+        <input class="input" id="user" name="user" type="text" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Hasło</label>
+      <div class="control">
+        <input class="input" id="pass" name="pass" type="password">
+      </div>
+    </div>
+
+    <button type="submit" class="button is-block is-primary is-fullwidth is-medium">Wduś</button>
+
+    {% csrf-field %}
+  </form>
+  </div>
+  </section>
+{% endblock %}

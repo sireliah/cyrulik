@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="content">
+  <div class="box">
+  <h3>Dodaj notatkę</h3>
+  <form id="post" action="/addnote" method="POST">
+    <div class="field">
+      <label class="label">Tytuł</label>
+      <div class="control">
+        <input class="input" id="title" name="title" type="text" autocomplete="off">
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Treść</label>
+      <div class="control">
+        <textarea class="textarea" id="text" name="text"></textarea>
+      </div>
+    </div>
+    {% csrf-field %}
+    <button type="submit" class="button is-block is-primary is-fullwidth is-medium">Wduś</button>
+    
+  </form>
+  </div>
+  </div>
+</section>
+
+<section class="section">
+<div class="content">
+  <div class="columns">
+    <div class="column">
+      <h3>Notatki</h3>
+      {% for item in messages %}
+      <article class="message">
+        <div class="message-header">
+          <p><small class="has-text-grey">{{item.id}}:</small> {{item.title}}</p>
+          <p class="has-text-primary"><span class="has-text-warning">{{item.author}} </span>{{item.date}}</p>
+        </div>
+        <div class="message-body">
+        {{item.text|makeurl|linebreaks-br|safe}}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}
