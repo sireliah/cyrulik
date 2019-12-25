@@ -11,12 +11,15 @@
          :user (get env :db-user)
          :password (get env :db-password)})
 
-(def sqlmap {:select [:id :title :text :date :author]
+(def sqlmap-select {:select [:id :title :text :date :author]
              :from [:cloaca]})
 
 (defn get-notes [] 
-  (let [notes (jdbc/query db (sql/format sqlmap))]
+  (let [notes (jdbc/query db (sql/format sqlmap-select))]
     (reverse notes)))
 
 (defn add-note! [data]
   (jdbc/insert! db :cloaca data))
+
+(defn delete-note! [note-id]
+  (jdbc/delete! db :cloaca ["id = ?" note-id]))

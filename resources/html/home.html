@@ -4,7 +4,7 @@
   <div class="content">
   <div class="box">
   <h3>Dodaj notatkę</h3>
-  <form id="post" action="/addnote" method="POST">
+  <form id="post" action="/notes" method="POST">
     <div class="field">
       <label class="label">Tytuł</label>
       <div class="control">
@@ -31,13 +31,20 @@
     <div class="column">
       <h3>Notatki</h3>
       {% for item in messages %}
-      <article class="message">
+      <article class="message box">
         <div class="message-header">
           <p><small class="has-text-grey">{{item.id}}:</small> {{item.title}}</p>
-          <p class="has-text-primary"><span class="has-text-warning">{{item.author}} </span>{{item.date}}</p>
+            <form id="delete" action="/notes/{{item.id}}/delete" method="POST">
+              {% csrf-field %}
+              <button class="delete" type="submit"></button>
+            </form>
         </div>
-        <div class="message-body">
+        <div class="message-body" style="word-break: break-word;">
         {{item.text|makeurl|linebreaks-br|safe}}
+        </div>
+        <div class="message-header has-background-grey-lighter is-size-6">
+          <p></p>
+          <p><span class="has-text-danger">{{item.author}}: </span><span class="has-text-black">{{item.date}}</span></p>
         </div>
       </article>
       {% endfor %}

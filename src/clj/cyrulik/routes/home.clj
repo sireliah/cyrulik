@@ -8,19 +8,15 @@
    [cyrulik.middleware :as middleware]
    [ring.util.response :as resp]
    [ring.middleware.session :refer [wrap-session]]
-   [ring.util.http-response :as response]
-   [buddy.auth :refer [authenticated? throw-unauthorized]]))
+   [ring.util.http-response :as response]))
 
 (defn login-correct? [user password]
   (let [users (get env :users)]
     (= (get-in users [(str user) :password]) (str password))))
 
 (defn home-page [request]
-  (if-not (authenticated? request)
-    (resp/redirect "/login")
-    (let [notes (db/get-notes)]
-      (layout/render request "home.html" 
-                     {:messages notes}))))
+  (let [notes (db/get-notes)]
+    (layout/render request "home.html" {:messages notes})))
 
 (defn add-note! [request]
   (let [title (get-in request [:params :title])
@@ -28,6 +24,11 @@
         user (name (get-in request [:session :identity]))
         now (java.util.Date.)]
     (db/add-note! {:title title :text text :date now :author user}))
+  (resp/redirect "/"))
+
+(defn delete-note! [request]
+  (let [note-id (Integer. (get-in request [:path-params :note-id]))]
+    (db/delete-note! note-id))
   (resp/redirect "/"))
 
 (defn login-page [request]
@@ -57,9 +58,17 @@
    {:middleware [
      middleware/wrap-csrf
      middleware/wrap-auth
-     middleware/wrap-formats]}
+     middleware/wrap-formats
+     middleware/wrap-check-logged]}
    ["/" {:get home-page}]
    ["/about" {:get about-page}]
+   ["/notes" {:post add-note!}]
+   ["/notes/:note-id/delete" {:post delete-note!}]])
+
+(defn auth-routes []
+  [""
+   {:middleware [
+     middleware/wrap-csrf
+     middleware/wrap-auth]}
    ["/login" {:get login-page :post login-action!}]
-   ["/logout" {:get logout-action!}]
-   ["/addnote" {:post add-note!}]])
+   ["/logout" {:get logout-action!}]])

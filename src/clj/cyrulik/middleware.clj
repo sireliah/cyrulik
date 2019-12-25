@@ -6,6 +6,7 @@
     [clojure.tools.logging :as log]
     [cyrulik.layout :refer [error-page]]
     [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+    [ring.util.response :as resp]
     [cyrulik.middleware.formats :as formats]
     [muuntaja.middleware :refer [wrap-format wrap-params]]
     [cyrulik.config :refer [env]]
@@ -17,6 +18,10 @@
     [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]))
 
 (def backend (backends/session))
+
+(defn login-correct? [user password]
+  (let [users (get env :users)]
+    (= (get-in users [(str user) :password]) (str password))))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -41,6 +46,11 @@
       (wrap-authentication backend)
       (wrap-authorization backend)))
 
+(defn wrap-check-logged [handler]
+  (fn [request]
+    (if-not (authenticated? request)
+      (resp/redirect "/login")
+      (handler request))))
 
 (defn wrap-formats [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]

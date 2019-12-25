@@ -4,7 +4,7 @@
     [cyrulik.config :refer [env]]
     [cyrulik.middleware :as middleware]
     [cyrulik.layout :refer [error-page]]
-    [cyrulik.routes.home :refer [home-routes]]
+    [cyrulik.routes.home :refer [home-routes auth-routes]]
     [reitit.ring :as ring]
     [ring.middleware.content-type :refer [wrap-content-type]]
     [ring.middleware.webjars :refer [wrap-webjars]]
@@ -20,7 +20,7 @@
   :start
   (ring/ring-handler
     (ring/router
-      [(home-routes)])
+      [(home-routes) (auth-routes)])
     (ring/routes
       (ring/create-resource-handler
         {:path "/"})
