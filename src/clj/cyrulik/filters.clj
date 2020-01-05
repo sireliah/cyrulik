@@ -1,7 +1,7 @@
 (ns cyrulik.filters 
   (:use selmer.filters))
 
-(def pattern #"https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*")
+(def pattern #"https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&//=,;]*")
 
 (defn format-url [s target]
   "Converts given string to the HTML URL"

@@ -4,13 +4,13 @@
     [cyrulik.config :refer [env]]
     [cyrulik.middleware :as middleware]
     [cyrulik.layout :refer [error-page]]
-    [cyrulik.routes.home :refer [home-routes auth-routes]]
+    [cyrulik.routes.home :refer [home-routes]]
+    [cyrulik.routes.auth :refer [auth-routes]]
     [reitit.ring :as ring]
     [ring.middleware.content-type :refer [wrap-content-type]]
     [ring.middleware.webjars :refer [wrap-webjars]]
     [cyrulik.env :refer [defaults]]
     [mount.core :as mount]))
-
 
 (mount/defstate init-app
   :start ((or (:init defaults) (fn [])))

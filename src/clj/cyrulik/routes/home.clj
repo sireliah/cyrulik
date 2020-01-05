@@ -1,7 +1,8 @@
 (ns cyrulik.routes.home
-  (:import java.util.Date)
+  (:import
+    (java.util Date)
+    (java.text SimpleDateFormat))
   (:require
-   [cyrulik.config :refer [env]]
    [cyrulik.layout :as layout]
    [cyrulik.database :as db]
    [clojure.java.io :as io]
@@ -9,10 +10,6 @@
    [ring.util.response :as resp]
    [ring.middleware.session :refer [wrap-session]]
    [ring.util.http-response :as response]))
-
-(defn login-correct? [user password]
-  (let [users (get env :users)]
-    (= (get-in users [(str user) :password]) (str password))))
 
 (defn home-page [request]
   (let [notes (db/get-notes)]
@@ -31,27 +28,37 @@
     (db/delete-note! note-id))
   (resp/redirect "/"))
 
-(defn login-page [request]
-  (layout/render request "login.html"))
-
-(defn login-action! [request]
-  (let [user (get-in request [:params :user])
-        password (get-in request [:params :pass])
-        session (:session request)]
-    (if (login-correct? user password)
-      (do
-        (let [updated-session (assoc session :identity (keyword user))]
-          (-> (resp/redirect "/")
-              (assoc :session updated-session))))
-
-      (resp/redirect "/login"))))
-
-(defn logout-action! [request]
-  (-> (resp/redirect "/")
-      (assoc :session {}))) 
-
 (defn about-page [request]
   (layout/render request "about.html"))
+
+(defn speluncae-page [request]
+  (let [speluncae (db/get-speluncarum)]
+    (layout/render request "speluncae.html" {:messages speluncae})))
+
+(defn get-visited [request]
+ (let [value (get-in request [:params :visited])]
+  (if (= value "on") true false)))
+
+(defn get-visning [request]
+ (let [value (get-in request [:params :visning])]
+  (if (empty? value)
+    nil
+    (.parse (java.text.SimpleDateFormat. "yyyy-MM-dd HH:mm") value))))
+
+(defn add-spelunca! [request]
+  (db/add-spelunca!
+      {:url (get-in request [:params :url])
+       :note (get-in request [:params :note])
+       :date (java.util.Date.)
+       :visning (get-visning request)
+       :author (name (get-in request [:session :identity]))
+       :visited (get-visited request)})
+  (resp/redirect "/speluncae"))
+
+(defn delete-spelunca! [request]
+  (let [spelunca-id (Integer. (get-in request [:path-params :spelunca-id]))]
+    (db/delete-spelunca! spelunca-id))
+  (resp/redirect "/speluncae"))
 
 (defn home-routes []
   [""
@@ -63,12 +70,6 @@
    ["/" {:get home-page}]
    ["/about" {:get about-page}]
    ["/notes" {:post add-note!}]
-   ["/notes/:note-id/delete" {:post delete-note!}]])
-
-(defn auth-routes []
-  [""
-   {:middleware [
-     middleware/wrap-csrf
-     middleware/wrap-auth]}
-   ["/login" {:get login-page :post login-action!}]
-   ["/logout" {:get logout-action!}]])
+   ["/notes/:note-id/delete" {:post delete-note!}]
+   ["/speluncae" {:get speluncae-page :post add-spelunca!}]
+   ["/speluncae/:spelunca-id/delete" {:post delete-spelunca!}]])

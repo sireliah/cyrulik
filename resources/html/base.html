@@ -10,6 +10,8 @@
     {% style "/assets/material-icons/css/material-icons.min.css" %}
 
     {% style "/css/screen.css" %}
+    {% style "/css/bulma-calendar.min.css" %}
+    {% script "/js/bulma-calendar.min.js" %}
   </head>
   <body>
       <!-- navbar -->
@@ -25,9 +27,10 @@
               </div>
               <div id="nav-menu" class="navbar-menu">
                 <div class="navbar-start">
-                  <a href="/" class="navbar-item{% ifequal page "home.html" %} is-active{%endifequal%}">Home</a>
-                  <a href="/about" class="navbar-item{% ifequal page "about.html" %} is-active{%endifequal%}">About</a>
-                  <a href="/logout" class="navbar-item is-active">Logout</a>
+                  <a href="/" class="navbar-item{% ifequal page "home.html" %} is-active{%endifequal%}">Główna</a>
+                  <a href="/speluncae" class="navbar-item{% ifequal page "speluncae.html" %} is-active{%endifequal%}">Speluncae</a>
+                  <a href="/about" class="navbar-item{% ifequal page "about.html" %} is-active{%endifequal%}">A co to?</a>
+                  <a href="/logout" class="navbar-item is-active">Wyloguj</a>
                 </div>
               </div>
           </div>
@@ -59,7 +62,17 @@
           });
         })();
 
-        
+        // Initialize all input of date type.
+        const calendars = bulmaCalendar.attach('[type="datetime"]', {type: "datetime", dateFormat: "YYYY-MM-DD"});
+
+        // Loop on each calendar initialized
+        calendars.forEach(calendar => {
+	  // Add listener to date:selected event
+	  calendar.on('date:selected', date => {
+		console.log(date);
+	  });
+        });
+
         {% block page-scripts %}
         {% endblock %}
       </script>

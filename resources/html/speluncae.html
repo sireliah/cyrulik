@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="content">
+    <div class="box">
+      <h3>Dodaj spelunkę</h3>
+      <form id="post" action="/speluncae" method="POST">
+        <div class="field">
+          <label class="label">URL</label>
+          <div class="control">
+            <input class="input" id="url" name="url" type="text" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label class="checkbox">
+            <input class="checkbox" id="visited" name="visited" type="checkbox">
+            Odwiedzone
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="label">Visning</label>
+          <div class="control">
+            <input class="datetime" id="visning" name="visning" type="datetime">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Notka</label>
+          <div class="control">
+            <textarea class="textarea" id="note" name="note"></textarea>
+          </div>
+        </div>
+        {% csrf-field %}
+        <button type="submit" class="button is-block is-success is-fullwidth is-medium">Wduś</button>
+        
+      </form>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="content">
+      <div class="columns">
+        <div class="column">
+          <h3>Spelunki</h3>
+          {% for item in messages %}
+          <article class="message box">
+            <div class="message-header has-background-info">
+              <p><small class="has-text-grey">{{item.id}}:</small> {{item.url|makeurl|safe}}</p>
+              <form id="delete" action="/speluncae/{{item.id}}/delete" method="POST">
+                {% csrf-field %}
+                <button class="delete" type="submit"></button>
+              </form>
+            </div>
+            <div class="message-body" style="word-break: break-word;">
+              {{item.note|linebreaks-br|safe}}
+              <br />
+              <div class="box">
+              Visning: {{item.visning}}
+              </div>
+            </div>
+            <div class="message-header has-background-grey-lighter is-size-6">
+              <p></p>
+              <p><span class="has-text-danger">{{item.author}}: </span><span class="has-text-black">{{item.date}}</span></p>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+{% endblock %}
