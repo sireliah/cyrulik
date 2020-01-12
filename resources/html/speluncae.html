@@ -45,9 +45,9 @@
           <h3>Spelunki</h3>
           {% for item in messages %}
           <article class="message box">
-            <div class="message-header has-background-info">
+            <div class="message-header has-background-{% if item.visited %}grey-dark{% else %}info{% endif %}">
               <p><small class="has-text-grey">{{item.id}}:</small> {{item.url|makeurl|safe}}</p>
-              <form id="delete" action="/speluncae/{{item.id}}/delete" method="POST">
+              <form id="delete" action="/speluncae/{{item.id}}/visited" method="POST">
                 {% csrf-field %}
                 <button class="delete" type="submit"></button>
               </form>
@@ -55,7 +55,7 @@
             <div class="message-body" style="word-break: break-word;">
               {{item.note|linebreaks-br|safe}}
               <br />
-              <div class="box">
+              <div class="box {% if item.visited %}has-background-grey{% else %}{% endif %}">
               Visning: {{item.visning}}
               </div>
             </div>

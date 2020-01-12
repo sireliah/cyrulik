@@ -55,9 +55,9 @@
        :visited (get-visited request)})
   (resp/redirect "/speluncae"))
 
-(defn delete-spelunca! [request]
+(defn mark-visited-spelunca! [request]
   (let [spelunca-id (Integer. (get-in request [:path-params :spelunca-id]))]
-    (db/delete-spelunca! spelunca-id))
+    (db/mark-visited-spelunca! spelunca-id))
   (resp/redirect "/speluncae"))
 
 (defn home-routes []
@@ -72,4 +72,4 @@
    ["/notes" {:post add-note!}]
    ["/notes/:note-id/delete" {:post delete-note!}]
    ["/speluncae" {:get speluncae-page :post add-spelunca!}]
-   ["/speluncae/:spelunca-id/delete" {:post delete-spelunca!}]])
+   ["/speluncae/:spelunca-id/visited" {:post mark-visited-spelunca!}]])

@@ -18,7 +18,7 @@
 (def select-speluncarum
   {:select [:id :url :note :date :author :visning :visited]
    :from [:speluncae]
-   :order-by [:visning]})
+   :order-by [[:visning :desc]]})
 
 (defn get-notes [] 
   (let [notes (jdbc/query db (sql/format select-notes))]
@@ -36,5 +36,9 @@
 (defn add-spelunca! [data]
   (jdbc/insert! db :speluncae data))
 
-(defn delete-spelunca! [spelunca-id]
-  (jdbc/delete! db :speluncae ["id = ?" spelunca-id]))
+(defn mark-visited-spelunca! [spelunca-id]
+  (let [query (-> (helpers/update :speluncae)
+                  (helpers/sset {:visited true})
+                  (helpers/where [:= :id spelunca-id])
+                  sql/format)]
+    (jdbc/execute! db query)))
