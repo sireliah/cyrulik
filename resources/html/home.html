@@ -36,7 +36,7 @@
           <p><small class="has-text-grey">{{item.id}}:</small> {{item.title}}</p>
             <form id="delete" action="/notes/{{item.id}}/delete" method="POST">
               {% csrf-field %}
-              <button class="delete" type="submit"></button>
+              <button class="delete" type="submit" onclick="return confirm('Czy na pewno chcesz wysłać tę notkę na łono Abrahama?')"></button>
             </form>
         </div>
         <div class="message-body" style="word-break: break-word;">
