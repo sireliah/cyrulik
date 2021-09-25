@@ -1,21 +1,23 @@
 (ns cyrulik.middleware
   (:require
-    [cyrulik.env :refer [defaults]]
-    [cheshire.generate :as cheshire]
-    [cognitect.transit :as transit]
-    [clojure.tools.logging :as log]
-    [cyrulik.layout :refer [error-page]]
-    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-    [ring.util.response :as resp]
-    [cyrulik.middleware.formats :as formats]
-    [muuntaja.middleware :refer [wrap-format wrap-params]]
-    [cyrulik.config :refer [env]]
-    [ring-ttl-session.core :refer [ttl-memory-store]]
-    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-    [ring.middleware.session :refer [wrap-session]]
-    [buddy.auth :refer [authenticated? throw-unauthorized]]
-    [buddy.auth.backends :as backends]
-    [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]))
+   [clojure.string :as str]
+   [cyrulik.env :refer [defaults]]
+   [cheshire.generate :as cheshire]
+   [cognitect.transit :as transit]
+   [clojure.tools.logging :as log]
+   [cyrulik.layout :refer [error-page]]
+   [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+   [ring.util.response :as resp]
+   [cyrulik.middleware.formats :as formats]
+   [muuntaja.middleware :refer [wrap-format wrap-params]]
+   [cyrulik.config :refer [env]]
+   [ring-ttl-session.core :refer [ttl-memory-store]]
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [ring.middleware.session :refer [wrap-session]]
+   [buddy.auth :refer [authenticated? throw-unauthorized]]
+   [buddy.auth.backends :as backends]
+   [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+   [buddy.auth.http :refer [find-header]]))
 
 (def backend (backends/session))
 
@@ -35,11 +37,11 @@
 
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
-    handler
-    {:error-response
-     (error-page
-       {:status 403
-        :title "Invalid anti-forgery token"})}))
+   handler
+   {:error-response
+    (error-page
+     {:status 403
+      :title "Invalid anti-forgery token"})}))
 
 (defn wrap-auth [handler]
   (-> handler
@@ -64,7 +66,16 @@
       (wrap-session {:cookie-attrs {:http-only true}
                      :cookie-name "cyrulik-id"})
       (wrap-defaults
-        (-> site-defaults
-            (assoc-in [:security :anti-forgery] false)
-            (assoc-in [:session :store] (ttl-memory-store (* 60 30)))))
+       (-> site-defaults
+           (assoc-in [:security :anti-forgery] false)
+           (assoc-in [:session :store] (ttl-memory-store (* 60 30)))))
       wrap-internal-error))
+
+(defn wrap-check-logged-api [handler]
+  (fn [request]
+    (let [token-raw (last (find-header (request :headers) "authorization"))
+          token (if token-raw (str/trim (str/replace token-raw "Token" "")) "")
+          config-token (env :api-token)]
+      (if-not (= token config-token)
+        (resp/status 401)
+        (handler request)))))

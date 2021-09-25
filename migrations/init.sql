@@ -19,3 +19,10 @@ CREATE TABLE IF NOT EXISTS speluncae
     visning datetime NULL,
     visited boolean
 );
+
+CREATE TABLE IF NOT EXISTS metrics_in
+(
+    date datetime,
+    temperature varchar(20),
+    humidity varchar(20)
+);

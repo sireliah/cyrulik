@@ -31,6 +31,7 @@
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.8.0"]
                  [ring/ring-defaults "0.3.2"]
+                 [ring/ring-json "0.5.1"]
                  [selmer "1.12.17"]
                  [buddy/buddy-auth "2.2.0"]]
 

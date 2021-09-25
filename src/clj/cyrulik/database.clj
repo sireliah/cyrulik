@@ -36,6 +36,9 @@
 (defn add-spelunca! [data]
   (jdbc/insert! db :speluncae data))
 
+(defn add-metric! [data]
+  (jdbc/insert! db :metrics_in data))
+
 (defn mark-visited-spelunca! [spelunca-id]
   (let [query (-> (helpers/update :speluncae)
                   (helpers/sset {:visited true})
