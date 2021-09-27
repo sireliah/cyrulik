@@ -60,6 +60,11 @@
     (db/mark-visited-spelunca! spelunca-id))
   (resp/redirect "/speluncae"))
 
+(defn metrics-page [request]
+  (let [metric (db/get-metrics)]
+    (layout/render request "metrics.html" {:metric metric})))
+
+
 (defn home-routes []
   [""
    {:middleware [
@@ -72,4 +77,5 @@
    ["/notes" {:post add-note!}]
    ["/notes/:note-id/delete" {:post delete-note!}]
    ["/speluncae" {:get speluncae-page :post add-spelunca!}]
-   ["/speluncae/:spelunca-id/visited" {:post mark-visited-spelunca!}]])
+   ["/speluncae/:spelunca-id/visited" {:post mark-visited-spelunca!}]
+   ["/metric" {:get metrics-page}]])

@@ -20,6 +20,12 @@
    :from [:speluncae]
    :order-by [[:visning :desc]]})
 
+(def select-metric
+  {:select [:date :temperature :humidity]
+   :from [:metrics-in]
+   :order-by [[:date :desc]]
+   :limit 1})
+
 (defn get-notes [] 
   (let [notes (jdbc/query db (sql/format select-notes))]
     (reverse notes)))
@@ -45,3 +51,5 @@
                   (helpers/where [:= :id spelunca-id])
                   sql/format)]
     (jdbc/execute! db query)))
+
+(defn get-metrics [] (jdbc/query db (sql/format select-metric)))

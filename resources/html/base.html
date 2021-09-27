@@ -12,6 +12,42 @@
     {% style "/css/screen.css" %}
     {% style "/css/bulma-calendar.min.css" %}
     {% script "/js/bulma-calendar.min.js" %}
+    <script type="text/javascript">
+      function formatDate(dateStr) {
+        const date = new Date(dateStr)
+        console.log("Datestr: ", dateStr);
+        const d = date.toLocaleDateString(
+          'pl-pl',
+          {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }
+        );
+        const t = date.toLocaleTimeString("pl-PL");
+        document.getElementById("datetime").innerHTML = d + ' ' + t;
+      }
+      function checkStatus(dateStr) {
+        maxDataAge = 6; // minutes
+        const date = new Date(dateStr);
+        const now = Date.now();
+        const utc_date =  Date.UTC(
+          date.getUTCFullYear(),
+          date.getUTCMonth(),
+          date.getUTCDate(),
+          date.getUTCHours(),
+          date.getUTCMinutes(),
+          date.getUTCSeconds());
+
+        const diff = now - utc_date;
+
+        if (diff > maxDataAge * 60 * 1000) {
+          document.getElementById("status").innerHTML = "Dane zostały zjedzone przez kota 🐱";
+        } else {
+          document.getElementById("status").innerHTML = "Świeżutkie dane, prosto z pieca 🍞";
+        }
+      }
+    </script>
   </head>
   <body>
       <!-- navbar -->
@@ -29,6 +65,7 @@
                 <div class="navbar-start">
                   <a href="/" class="navbar-item{% ifequal page "home.html" %} is-active{%endifequal%}">Główna</a>
                   <a href="/speluncae" class="navbar-item{% ifequal page "speluncae.html" %} is-active{%endifequal%}">Speluncae</a>
+                   <a href="/metric" class="navbar-item{% ifequal page "metrics.html" %} is-active{%endifequal%}">Ciepłość</a>
                   <a href="/about" class="navbar-item{% ifequal page "about.html" %} is-active{%endifequal%}">A co to?</a>
                   <a href="/logout" class="navbar-item is-active">Wyloguj</a>
                 </div>

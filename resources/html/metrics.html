@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="content">
+    <div class="box">
+      <p id="status"></p>
+      <strong><p id="datetime"></p></strong>
+      {% for item in metric%}
+        <script>
+          formatDate("{{item.date}}Z");
+          checkStatus("{{item.date}}Z");
+        </script>
+        <p>Tempertura: <strong>{{item.temperature}}°C</strong></p>
+        <p>Wilgotność: <strong>{{item.humidity}}%</strong></p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
