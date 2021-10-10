@@ -1,8 +1,9 @@
 (ns cyrulik.routes.home
   (:import
-    (java.util Date)
-    (java.text SimpleDateFormat))
+   (java.util Date)
+   (java.text SimpleDateFormat))
   (:require
+   [cheshire.core :refer :all]
    [cyrulik.layout :as layout]
    [cyrulik.database :as db]
    [clojure.java.io :as io]
@@ -36,23 +37,23 @@
     (layout/render request "speluncae.html" {:messages speluncae})))
 
 (defn get-visited [request]
- (let [value (get-in request [:params :visited])]
-  (if (= value "on") true false)))
+  (let [value (get-in request [:params :visited])]
+    (if (= value "on") true false)))
 
 (defn get-visning [request]
- (let [value (get-in request [:params :visning])]
-  (if (empty? value)
-    nil
-    (.parse (java.text.SimpleDateFormat. "yyyy-MM-dd HH:mm") value))))
+  (let [value (get-in request [:params :visning])]
+    (if (empty? value)
+      nil
+      (.parse (java.text.SimpleDateFormat. "yyyy-MM-dd HH:mm") value))))
 
 (defn add-spelunca! [request]
   (db/add-spelunca!
-      {:url (get-in request [:params :url])
-       :note (get-in request [:params :note])
-       :date (java.util.Date.)
-       :visning (get-visning request)
-       :author (name (get-in request [:session :identity]))
-       :visited (get-visited request)})
+   {:url (get-in request [:params :url])
+    :note (get-in request [:params :note])
+    :date (java.util.Date.)
+    :visning (get-visning request)
+    :author (name (get-in request [:session :identity]))
+    :visited (get-visited request)})
   (resp/redirect "/speluncae"))
 
 (defn mark-visited-spelunca! [request]
@@ -61,17 +62,20 @@
   (resp/redirect "/speluncae"))
 
 (defn metrics-page [request]
-  (let [metric (db/get-metrics)]
-    (layout/render request "metrics.html" {:metric metric})))
-
+  (let [metric (db/get-metric)
+        metrics (db/get-all-metrics)
+        dates (generate-string (vec (map (fn [m] (m :date)) metrics)))
+        temperatures (generate-string (vec (map (fn [m] (m :temperature)) metrics)))
+        humidities (generate-string (vec (map (fn [m] (m :humidity)) metrics)))]
+    (println dates)
+    (layout/render request "metrics.html" {:metric metric :dates dates :temperatures temperatures :humidities humidities})))
 
 (defn home-routes []
   [""
-   {:middleware [
-     middleware/wrap-csrf
-     middleware/wrap-auth
-     middleware/wrap-formats
-     middleware/wrap-check-logged]}
+   {:middleware [middleware/wrap-csrf
+                 middleware/wrap-auth
+                 middleware/wrap-formats
+                 middleware/wrap-check-logged]}
    ["/" {:get home-page}]
    ["/about" {:get about-page}]
    ["/notes" {:post add-note!}]

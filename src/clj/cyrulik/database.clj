@@ -26,6 +26,11 @@
    :order-by [[:date :desc]]
    :limit 1})
 
+(def select-all-metrics
+  {:select [:date :temperature :humidity]
+   :from [:metrics-in]
+   :order-by [[:date :desc]]})
+
 (defn get-notes [] 
   (let [notes (jdbc/query db (sql/format select-notes))]
     (reverse notes)))
@@ -52,4 +57,6 @@
                   sql/format)]
     (jdbc/execute! db query)))
 
-(defn get-metrics [] (jdbc/query db (sql/format select-metric)))
+(defn get-metric [] (jdbc/query db (sql/format select-metric)))
+
+(defn get-all-metrics [] (jdbc/query db (sql/format select-all-metrics)))

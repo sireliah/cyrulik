@@ -14,7 +14,29 @@
         <p>Wilgotność: <strong>{{item.humidity}}%</strong></p>
       {% endfor %}
     </div>
+    <div class="box">
+      <div id="plot-temp"></div>
+      <div id="plot-humid"></div>
+    </div>
   </div>
+  <script>
+    var temp = [
+      {
+        x: {{ dates|safe }},
+        y: {{ temperatures|safe }},
+        type: 'scatter'
+      }
+    ];
+    var humid = [
+      {
+        x: {{ dates|safe }},
+        y: {{ humidities|safe }},
+        type: 'scatter'
+      }
+    ];
+    Plotly.newPlot('plot-temp', temp);
+    Plotly.newPlot('plot-humid', humid);
+  </script>
 </section>
 {% endblock %}
 
