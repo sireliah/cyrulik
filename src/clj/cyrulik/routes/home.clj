@@ -67,7 +67,6 @@
         dates (generate-string (vec (map (fn [m] (m :date)) metrics)))
         temperatures (generate-string (vec (map (fn [m] (m :temperature)) metrics)))
         humidities (generate-string (vec (map (fn [m] (m :humidity)) metrics)))]
-    (println dates)
     (layout/render request "metrics.html" {:metric metric :dates dates :temperatures temperatures :humidities humidities})))
 
 (defn home-routes []

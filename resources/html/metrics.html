@@ -7,8 +7,8 @@
       <strong><p id="datetime"></p></strong>
       {% for item in metric%}
         <script>
-          formatDate("{{item.date}}Z");
-          checkStatus("{{item.date}}Z");
+          formatDate("{{item.date}}");
+          checkStatus("{{item.date}}");
         </script>
         <p>Tempertura: <strong>{{item.temperature}}°C</strong></p>
         <p>Wilgotność: <strong>{{item.humidity}}%</strong></p>
@@ -20,22 +20,27 @@
     </div>
   </div>
   <script>
-    var temp = [
-      {
+    var temp = {
         x: {{ dates|safe }},
         y: {{ temperatures|safe }},
-        type: 'scatter'
-      }
-    ];
-    var humid = [
-      {
+        type: 'scatter',
+        mode: 'lines',
+        name: 'temperatura',
+        line: {color: '#FF0000'}
+    };
+    var humid = {
         x: {{ dates|safe }},
         y: {{ humidities|safe }},
-        type: 'scatter'
-      }
-    ];
-    Plotly.newPlot('plot-temp', temp);
-    Plotly.newPlot('plot-humid', humid);
+        type: 'scatter',
+        mode: 'lines',
+        name: 'wilgotność',
+        line: {color: '#6A5ACD'}
+    };
+    var data = [temp, humid];
+    var layout = {
+      title: 'Wykres ciepłości i mokrości',
+    };
+    Plotly.newPlot('plot-temp', data, layout);
   </script>
 </section>
 {% endblock %}
