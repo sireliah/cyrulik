@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS cloaca
-( 
+(
     id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title varchar(255),
     author varchar(100),
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS cloaca
 );
 
 CREATE TABLE IF NOT EXISTS speluncae
-( 
+(
     id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     url varchar(255),
     author varchar(100),
@@ -25,4 +25,12 @@ CREATE TABLE IF NOT EXISTS metrics_in
     date datetime,
     temperature varchar(20),
     humidity varchar(20)
+);
+
+CREATE TABLE IF NOT EXISTS dust
+(
+    date datetime,
+    pm1 integer,
+    pm25 integer,
+    pm10 integer
 );

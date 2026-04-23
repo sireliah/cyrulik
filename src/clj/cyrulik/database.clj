@@ -7,9 +7,9 @@
    [honeysql.helpers :as helpers]))
 
 (defstate db :start {:subprotocol "mysql"
-         :subname (get env :connection-string)
-         :user (get env :db-user)
-         :password (get env :db-password)})
+                     :subname (get env :connection-string)
+                     :user (get env :db-user)
+                     :password (get env :db-password)})
 
 (def select-notes
   {:select [:id :title :text :date :author]
@@ -29,9 +29,22 @@
 (def select-all-metrics
   {:select [:date :temperature :humidity]
    :from [:metrics-in]
-   :order-by [[:date :desc]]})
+   :order-by [[:date :desc]]
+   :limit 25920})
 
-(defn get-notes [] 
+(def select-dust
+  {:select [:date :pm1 :pm25 :pm10]
+   :from [:dust]
+   :order-by [[:date :desc]]
+   :limit 1})
+
+(def select-all-dust
+  {:select [:date :pm1 :pm25 :pm10]
+   :from [:dust]
+   :order-by [[:date :desc]]
+   :limit 25920})
+
+(defn get-notes []
   (let [notes (jdbc/query db (sql/format select-notes))]
     (reverse notes)))
 
@@ -47,8 +60,11 @@
 (defn add-spelunca! [data]
   (jdbc/insert! db :speluncae data))
 
-(defn add-metric! [data]
+(defn add-temp! [data]
   (jdbc/insert! db :metrics_in data))
+
+(defn add-dust! [data]
+  (jdbc/insert! db :dust data))
 
 (defn mark-visited-spelunca! [spelunca-id]
   (let [query (-> (helpers/update :speluncae)
@@ -60,3 +76,7 @@
 (defn get-metric [] (jdbc/query db (sql/format select-metric)))
 
 (defn get-all-metrics [] (jdbc/query db (sql/format select-all-metrics)))
+
+(defn get-dust [] (jdbc/query db (sql/format select-dust)))
+
+(defn get-all-dust [] (jdbc/query db (sql/format select-all-dust)))

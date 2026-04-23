@@ -1,47 +1,94 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <section class="section">
-  <div class="content">
-    <div class="box">
-      <p id="status"></p>
-      <strong><p id="datetime"></p></strong>
-      {% for item in metric%}
+    <div class="content">
+        <div class="box">
+            <p id="status"></p>
+            <strong><p id="datetime"></p></strong>
+            {% for item in metric %}
+            <script>
+                formatDate("{{item.date}}");
+                checkStatus("{{item.date}}");
+            </script>
+            <p>Tempertura: <strong>{{item.temperature}}°C</strong></p>
+            <p>Wilgotność: <strong>{{item.humidity}}%</strong></p>
+            {% endfor %}
+        </div>
+        <div class="box">
+            <div id="plot-temp"></div>
+            <div id="plot-humid"></div>
+        </div>
+    </div>
+    <script>
+        var temp = {
+            x: {{ dates|safe }},
+            y: {{ temperatures|safe }},
+            type: 'scatter',
+            mode: 'lines',
+            name: 'temperatura',
+            line: {color: '#FF0000'}
+        };
+        var humid = {
+            x: {{ dates|safe }},
+            y: {{ humidities|safe }},
+            type: 'scatter',
+            mode: 'lines',
+            name: 'wilgotność',
+            line: {color: '#6A5ACD'}
+        };
+        var data = [temp, humid];
+        var layout = {
+          title: 'Wykres ciepłości i mokrości',
+        };
+        Plotly.newPlot('plot-temp', data, layout);
+    </script>
+</section>
+<section class="section">
+    <div class="content">
+        <strong><p id="datetime"></p></strong>
+        {% for item in dust_metric %}
         <script>
-          formatDate("{{item.date}}");
-          checkStatus("{{item.date}}");
+            formatDate("{{item.date}}");
+            checkStatus("{{item.date}}");
         </script>
-        <p>Tempertura: <strong>{{item.temperature}}°C</strong></p>
-        <p>Wilgotność: <strong>{{item.humidity}}%</strong></p>
-      {% endfor %}
+        <p>PM1: <strong>{{item.pm1}} µg/m³</strong></p>
+        <p>PM2.5: <strong>{{item.pm25}} µg/m³</strong></p>
+        <p>PM10: <strong>{{item.pm10}} µg/m³</strong></p>
+        {% endfor %}
+        <div class="box">
+            <div id="plot-dust"></div>
+        </div>
     </div>
-    <div class="box">
-      <div id="plot-temp"></div>
-      <div id="plot-humid"></div>
-    </div>
-  </div>
-  <script>
-    var temp = {
-        x: {{ dates|safe }},
-        y: {{ temperatures|safe }},
-        type: 'scatter',
-        mode: 'lines',
-        name: 'temperatura',
-        line: {color: '#FF0000'}
-    };
-    var humid = {
-        x: {{ dates|safe }},
-        y: {{ humidities|safe }},
-        type: 'scatter',
-        mode: 'lines',
-        name: 'wilgotność',
-        line: {color: '#6A5ACD'}
-    };
-    var data = [temp, humid];
-    var layout = {
-      title: 'Wykres ciepłości i mokrości',
-    };
-    Plotly.newPlot('plot-temp', data, layout);
-  </script>
+    <script>
+        var pm1 = {
+            x: {{ dust-dates|safe }},
+            y: {{ dust-pm1|safe }},
+            type: 'scatter',
+            mode: 'lines',
+            name: 'PM1',
+            line: {color: '#FFA500'}
+        };
+        var pm25 = {
+            x: {{ dust-dates|safe }},
+            y: {{ dust-pm25|safe }},
+            type: 'scatter',
+            mode: 'lines',
+            name: 'PM2.5',
+            line: {color: '#FF0000'}
+        };
+        var pm10 = {
+            x: {{ dust-dates|safe }},
+            y: {{ dust-pm10|safe }},
+            type: 'scatter',
+            mode: 'lines',
+            name: 'PM10',
+            line: {color: '#8B0000'}
+        };
+
+        var dustData = [pm1, pm25, pm10];
+        var dustLayout = {
+          title: 'PYŁ',
+        };
+        Plotly.newPlot('plot-dust', dustData, dustLayout);
+    </script>
 </section>
 {% endblock %}
-

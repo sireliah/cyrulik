@@ -9,18 +9,29 @@
    [ring.util.response :as resp]
    [ring.middleware.json :as json]))
 
+(defn parse-int [val] (Integer/parseInt val))
 
-(defn add-metrics! [request]
-  (println (request :body))
+(defn add-temp! [request]
+  ;; (println (request :body))
   (let [date (get-in request [:body "date"])
         date-parsed (str/replace date "+00:00" "")]
-    (db/add-metric! {:date date-parsed
-                     :temperature (get-in request [:body "temperature"])
-                     :humidity (get-in request [:body "humidity"])})
-    (resp/status 201)))
+    (db/add-temp! {:date date-parsed
+                   :temperature (get-in request [:body "temperature"])
+                   :humidity (get-in request [:body "humidity"])})
+    (resp/status (resp/response "") 201)))
+
+(defn add-dust! [request]
+  (let [date (get-in request [:body "date"])
+        date-parsed (str/replace date "+00:00" "")]
+    (db/add-dust! {:date date-parsed
+                   :pm1 (parse-int (get-in request [:body "pm1"]))
+                   :pm25 (parse-int (get-in request [:body "pm25"]))
+                   :pm10 (parse-int (get-in request [:body "pm10"]))})
+    (resp/status (resp/response "") 201)))
 
 (defn api-routes []
   [""
    {:middleware [json/wrap-json-body {:keywords? true}
                  middleware/wrap-check-logged-api]}
-   ["/metrics" {:post add-metrics!}]])
+   ["/temp" {:post add-temp!}]
+   ["/dust" {:post add-dust!}]])

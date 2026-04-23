@@ -66,8 +66,22 @@
         metrics (db/get-all-metrics)
         dates (generate-string (vec (map (fn [m] (m :date)) metrics)))
         temperatures (generate-string (vec (map (fn [m] (m :temperature)) metrics)))
-        humidities (generate-string (vec (map (fn [m] (m :humidity)) metrics)))]
-    (layout/render request "metrics.html" {:metric metric :dates dates :temperatures temperatures :humidities humidities})))
+        humidities (generate-string (vec (map (fn [m] (m :humidity)) metrics)))
+        dust-metric (db/get-dust)
+        all-dust (db/get-all-dust)
+        dust-dates (generate-string (vec (map (fn [m] (m :date)) all-dust)))
+        dust-pm1 (generate-string (vec (map (fn [m] (m :pm1)) all-dust)))
+        dust-pm25 (generate-string (vec (map (fn [m] (m :pm25)) all-dust)))
+        dust-pm10 (generate-string (vec (map (fn [m] (m :pm10)) all-dust)))]
+    (layout/render request "metrics.html" {:metric metric
+                                           :dates dates
+                                           :temperatures temperatures
+                                           :humidities humidities
+                                           :dust-metric dust-metric
+                                           :dust-dates dust-dates
+                                           :dust-pm1 dust-pm1
+                                           :dust-pm25 dust-pm25
+                                           :dust-pm10 dust-pm10})))
 
 (defn home-routes []
   [""
